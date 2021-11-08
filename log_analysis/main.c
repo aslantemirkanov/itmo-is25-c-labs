@@ -33,10 +33,13 @@ void errors_count(){
     fprintf(file_output,"%d",error_str_count);
     fclose(file_input);
     fclose(file_output);
+
     return;
 }
 
 int main() {
     errors_count();
+
+    return 0;
 
 }
