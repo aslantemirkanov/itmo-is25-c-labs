@@ -1,6 +1,6 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
-
 
 int conversion_date_to_sec(char *date) {
     long int second = 0;
@@ -21,7 +21,6 @@ void errors_count() {
     int error_str_count = 0;
     while (1) {
         str_pointer = fgets(str, sizeof(str), file_input);
-        //конец файла
         if (str_pointer == NULL) {
             if (feof(file_input) != 0) {
                 fprintf(file_output, "reading has finished\n");
@@ -41,15 +40,42 @@ void errors_count() {
     fprintf(file_output, "%d", error_str_count);
     fclose(file_input);
     fclose(file_output);
-
     return;
+}
+
+void str_print(int first, int last, int max_len, int time_window) {
+    FILE *file_input;
+    file_input = fopen("access_log_Jul95.txt", "r");
+    FILE *file_output;
+    file_output = fopen("max_request.txt", "w");
+    fprintf(file_output, "first-%d last-%d max_len-%d time_window- %d\n", first, last, max_len, time_window);
+    long int index = 0;
+    char str[500];
+    char *str_pointer;
+    while (1) {
+        str_pointer = fgets(str, sizeof(str), file_input);
+        if (str_pointer == NULL) {
+            if (feof(file_input) != 0) {
+                break;
+            }
+        }
+        if (index == first) {
+            fprintf(file_output, "%d- %s", first, str);
+        }
+        if (index == last) {
+            fprintf(file_output, "%d- %s", last, str);
+        }
+        index++;
+    }
+    fclose(file_input);
+    fclose(file_output);
 }
 
 void max_time_window_request(int time_window) {
     FILE *file_input;
     file_input = fopen("access_log_Jul95.txt", "r");
-     FILE *file_output;
-     file_output = fopen("times.txt", "w");
+    int *times_in_second = (int *) (long) malloc(sizeof(long) * 2000000);
+    long int index = 0;
     char str[500];
     char *str_pointer;
     while (1) {
@@ -69,17 +95,37 @@ void max_time_window_request(int time_window) {
             date[date_index++] = str[i];
             i++;
         }
-        long int second = conversion_date_to_sec(date);
-        fprintf(file_output,"%d\n", second);
+        times_in_second[index++] = conversion_date_to_sec(date);
     }
+    int len_arr = index;
+    int max_len = 0;
+    int first = 0, last = 0;
+    int first_rez, last_rez;
+    int buffer;
+    while (last < len_arr) {
+        buffer = times_in_second[last] - times_in_second[first];
+        if (buffer > time_window) {
+            while (buffer > time_window) {
+                first++;
+                buffer = times_in_second[last] - times_in_second[first];
+            }
+        }
+        if (buffer <= time_window) {
+            if (last - first > max_len) {
+                max_len = last - first;
+                first_rez = first;
+                last_rez = last;
+            }
+        }
+        last++;
+    }
+    str_print(first_rez, last_rez, max_len + 1, time_window);
     fclose(file_input);
-    fclose(file_output);
-    return;
-
+    free(times_in_second);
 }
 
 int main() {
-    //errors_count();
+    errors_count();
     int time_window;
     printf("Input time window in seconds:\n");
     scanf("%d", &time_window);
