@@ -11,16 +11,18 @@ int conversion_date_to_sec(char *date) {
     return second;
 }
 
-void errors_count() {
+int errors_count() {
     FILE *file_input;
     file_input = fopen("access_log_Jul95.txt", "r");
     FILE *file_output;
     file_output = fopen("errors.txt", "w");
+    int str_count = 0;
     char str[500];
     char *str_pointer;
     int error_str_count = 0;
     while (1) {
         str_pointer = fgets(str, sizeof(str), file_input);
+        str_count++;
         if (str_pointer == NULL) {
             if (feof(file_input) != 0) {
                 fprintf(file_output, "reading has finished\n");
@@ -40,7 +42,7 @@ void errors_count() {
     fprintf(file_output, "%d", error_str_count);
     fclose(file_input);
     fclose(file_output);
-    return;
+    return str_count;
 }
 
 void str_print(int first, int last, int max_len, int time_window) {
@@ -48,7 +50,7 @@ void str_print(int first, int last, int max_len, int time_window) {
     file_input = fopen("access_log_Jul95.txt", "r");
     FILE *file_output;
     file_output = fopen("max_request.txt", "w");
-    fprintf(file_output, "first-%d last-%d max_len-%d time_window- %d\n", first, last, max_len, time_window);
+    fprintf(file_output, "first-%d last-%d max_request_count-%d time_window- %d\n", first, last, max_len, time_window);
     long int index = 0;
     char str[500];
     char *str_pointer;
@@ -67,14 +69,17 @@ void str_print(int first, int last, int max_len, int time_window) {
         }
         index++;
     }
+    if (index == last) {
+            fprintf(file_output, "%d- %s", last, str);
+        }
     fclose(file_input);
     fclose(file_output);
 }
 
-void max_time_window_request(int time_window) {
+void max_time_window_request(int time_window, int str_count) {
     FILE *file_input;
     file_input = fopen("access_log_Jul95.txt", "r");
-    int *times_in_second = (int *) (long) malloc(sizeof(long) * 2000000);
+    int *times_in_second = (int *) (long) malloc(sizeof(long) * str_count);
     long int index = 0;
     char str[500];
     char *str_pointer;
@@ -102,7 +107,7 @@ void max_time_window_request(int time_window) {
     int first = 0, last = 0;
     int first_rez, last_rez;
     int buffer;
-    while (last < len_arr) {
+    while (last <= len_arr) {
         buffer = times_in_second[last] - times_in_second[first];
         if (buffer > time_window) {
             while (buffer > time_window) {
@@ -125,10 +130,10 @@ void max_time_window_request(int time_window) {
 }
 
 int main() {
-    errors_count();
+    int str_count = errors_count();
     int time_window;
     printf("Input time window in seconds:\n");
     scanf("%d", &time_window);
-    max_time_window_request(time_window);
+    max_time_window_request(time_window, str_count);
     return 0;
 }
