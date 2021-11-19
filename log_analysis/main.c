@@ -152,11 +152,10 @@ void max_time_window_request(int time_window, int str_count) {
     free(times_in_second);
 }
 
-int main() {
+int main(int argc, char *argv[]) {
     int str_count = errors_count();
-    int time_window;
-    printf("Input time window in seconds:\n");
-    scanf("%d", &time_window);
+    int time_window=atoi(argv[1]);
+    printf("%d\n",time_window);
     max_time_window_request(time_window, str_count);
     return 0;
 }

@@ -54,14 +54,10 @@ int main(int argc, char *argv[]){
     FILE *file;
     file = fopen("test.txt", "r");
     fclose(file);
-    char fileName[] = "test.txt";
-    char ln1[] = "--lines";
-    char ln2[] = "-l";
-    char bt1[] = "--bytes";
-    char bt2[] = "-c";
-    char wd1[] = "--words";
-    char wd2[] = "-w";
-    int Flag[3];
+    char fileName[] = "test.txt";    char ln1[] = "--lines";
+    char ln2[] = "-l";    char bt1[] = "--bytes";
+    char bt2[] = "-c";    char wd1[] = "--words";
+    char wd2[] = "-w";    int Flag[3];
     for (int i = 0; i < 3; i++) {
         Flag[i] = 0;
     }
@@ -85,7 +81,7 @@ int main(int argc, char *argv[]){
                     WdCount();
                 }
             } else {
-                printf("you loser\n");
+                //printf("you loser\n");
             }
         }
     }
