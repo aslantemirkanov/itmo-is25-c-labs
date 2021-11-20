@@ -2,9 +2,9 @@
 #include <malloc.h>
 #include <string.h>
 
-long filesize(char *filename) {
+unsigned long filesize(char *filename) {
     FILE *file = fopen(filename, "r");
-    long s;
+    unsigned long s;
     fseek(file, 0, SEEK_SET);
     if (file != NULL) {
         fseek(file, 0, SEEK_END);
@@ -66,19 +66,24 @@ void show(char *filename) {
     file = fopen(filename, "r");
     char *data = malloc(sizeof(char) * (filesize(filename)));
     fread(data, 1, filesize(filename), file);
-    int size1 = ((data[6] << 21) | ((data[7] << 14) | ((data[8] << 7) | (data[9]))));
-    int cur = 10;
-    while (cur < size1) {
+    unsigned long size1 = ((data[6] << 21) | ((data[7] << 14) | ((data[8] << 7) | (data[9]))));
+    printf("%lu\n", size1);
+    unsigned long cur = 10;
+    while (cur <= size1) {
         char ident[5] = {data[cur], data[cur + 1], data[cur + 2], data[cur + 3], '\0'};
         cur = cur + 4;
-        int size = data[cur] * 256 * 256 * 256 + data[cur + 1] * 256 * 256 + data[cur + 2] * 256 + data[cur + 3];
+        unsigned long size = ((data[cur] << 21) | ((data[cur + 1] << 14) | ((data[cur + 2] << 7) | (data[cur + 3]))));
         cur = cur + 6;
         if (check(ident)) {
             printf("(%s) ", ident);
-            for (int i = 1; i < size; i++) {
+            for (unsigned long i = 1; i < size; i++) {
                 printf("%c", data[cur + i]);
             }
             printf("\n");
+        } else {
+            if (!strcmp("USLT",ident)){
+                printf("To get Lyrics:\t--filepath=Song.mp3 --get=USLT");
+            }
         }
         cur += size;
     }
@@ -96,7 +101,7 @@ void get(char *filename, char *name) {
     while (cur < size1) {
         char ident[5] = {data[cur], data[cur + 1], data[cur + 2], data[cur + 3], '\0'};
         cur = cur + 4;
-        int size = data[cur] * 256 * 256 * 256 + data[cur + 1] * 256 * 256 + data[cur + 2] * 256 + data[cur + 3];
+        unsigned long size = ((data[cur] << 21) | ((data[cur + 1] << 14) | ((data[cur + 2] << 7) | (data[cur + 3]))));
         cur = cur + 6;
         if (!strcmp(ident, name)) {
             printf("(%s) ", ident);
