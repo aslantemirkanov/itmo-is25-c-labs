@@ -109,7 +109,7 @@ void set(char *track_name, char *prop_name, char *prop_value) {
             fseek(file, index, SEEK_SET);
             fwrite(&data[index], 1, 6, file);
             fwrite(prop_value, 1, input_size, file);
-            fwrite(&data[index + size + 6], 1, size_file - (index + size + 6), file);
+            fwrite(&data[index + size + 6], 1, size_file - (index + size + 6) - 1, file);
             break;
         } else {
             index += size + 10;
@@ -170,7 +170,9 @@ int main(int argc, char *argv[]) {
 
         if (!strcmp(ident, "--set")) {
             char *prop_name = strpbrk(argv[i + 1], "=") + 1;
-            char *prop_value = strpbrk(argv[i + 2], "=") + 1;
+            char *tmp_value = strpbrk(argv[i + 2], "=") + 1;
+            char prop_value[400];
+            snprintf(prop_value, sizeof(prop_value), "%c%s%c",'\x03', tmp_value, 32);
             set(track_name, prop_name, prop_value);
             i++;
         }
