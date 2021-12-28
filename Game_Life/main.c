@@ -80,7 +80,7 @@ void pixel_read(char *file_name, char **pixel_data) {
 
             if (width_pointer >= width) {
                 width_pointer = 0;
-                height_pointer = height_pointer - 1;
+                height_pointer--;
 
                 while (i % 4 != 0) {
                     fgetc(file);

@@ -172,7 +172,7 @@ int main(int argc, char *argv[]) {
             char *prop_name = strpbrk(argv[i + 1], "=") + 1;
             char *tmp_value = strpbrk(argv[i + 2], "=") + 1;
             char prop_value[400];
-            snprintf(prop_value, sizeof(prop_value), "%c%s%c",'\x03', tmp_value, 32);
+            snprintf(prop_value, sizeof(prop_value), "%c%s%c", '\x03', tmp_value, 32);
             set(track_name, prop_name, prop_value);
             i++;
         }
